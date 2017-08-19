@@ -103,6 +103,10 @@ class RestClient(object):
     def index(self):
         return self.request("/api/v1/public/index", {})
 
+    
+    def stats(self):
+        return self.request("/api/v1/public/stats", {})
+
 
     def account(self):
         return self.request("/api/v1/private/account", {})

@@ -22,7 +22,7 @@ client.account()
 
 ## API - REST Client
 
-`new RestClient(key, secret, url)`
+`RestClient(key, secret, url)`
 
 Constructor creates new REST client.
 
@@ -187,3 +187,76 @@ Constructor creates new REST client.
   | `count`        | `integer`  | Optional, number of results to fetch. Default: 20                                                  |
   | `instrument`   | `string`   | Optional, name of instrument, also aliases “all”, “futures”, “options” are allowed. Default: "all" |
   | `startTradeId` | `integer`  | Optional, number of requested records                                                              |
+
+## API - Websocket Client
+
+The websocket client extends the restclient. All requests are sent over websocket for minumum delay. The websocket client also allows the user to subscribe to various event notifications.
+
+
+* connect(self, force=False)
+
+Connects the client to the websocket. Note that clients will need to connect before any other method is invoked. When `force` is true, any existing connection will be terminated first, otherwise connect will only connect when it is not already connected.
+
+* disconnect(self)
+
+Disconnects the client from the websocket. If the client is already disconnected, this does nothing.
+
+* subscribe_trades(self, instrument) - [Doc](https://docs.deribit.com/rpc-notifications.html#tradeevent)
+
+Subscribes to trades for the specified instrument. Returns an iterator, which can be used in for loops.
+
+  **Parameters**
+
+  | Name           | Type       | Description                                                                                        |
+  |----------------|------------|----------------------------------------------------------------------------------------------------|
+  | `instrument`   | `string`   | name of instrument   |
+
+* subscribe_my_trades(self, instrument=None) - [Doc](https://docs.deribit.com/rpc-notifications.html#mytradeevent)
+
+Subscribes to user trades. Returns an iterator, which can be used in for loops.
+
+  **Parameters**
+
+  | Name           | Type       | Description                                                                                        |
+  |----------------|------------|----------------------------------------------------------------------------------------------------|
+  | `instrument`   | `string`   | Optional, name of instrument to get user trades for. |
+
+* subscribe_orders(self, instrument=None) - [Doc](https://docs.deribit.com/rpc-notifications.html#userorderevent)
+
+Subscribes to changes in user's orders. Returns an iterator, which can be used in for loops.
+
+  **Parameters**
+
+  | Name           | Type       | Description                                                                                        |
+  |----------------|------------|----------------------------------------------------------------------------------------------------|
+  | `instrument`   | `string`   | Optional, name of instrument. |
+
+* subscribe_portfolio(self) - [Doc](https://docs.deribit.com/rpc-notifications.html#portfolioevent)
+
+Subscribes to changes in user's portfolio. Returns an iterator, which can be used in for loops.
+
+* subscribe_orderbook(self, instrument) - [Doc](https://docs.deribit.com/rpc-notifications.html#orderbookevent)
+
+Subscribes to changes in orderbook. Returns an iterator, which can be used in for loops.
+
+  **Parameters**
+
+  | Name           | Type       | Description                                                                                        |
+  |----------------|------------|----------------------------------------------------------------------------------------------------|
+  | `instrument`   | `string`   | name of instrument. |
+
+* setheartbeat(self, interval)
+
+Sets up heartbeats. A heartbeat checks on a specified interval to see if the connection is still function. If it isn't the connection is terminated. Especially useful in combination with cancelondisconnect
+
+  | Name           | Type       | Description                                                                                        |
+  |----------------|------------|----------------------------------------------------------------------------------------------------|
+  | `interval`   | `int`   | The number of seconds between two hearbeats. |
+
+* cancelondisconnect(self, state)
+
+Sets up cancel on disconnect. When this is enabled, all user orders are cancelled when the websocket connection is lost.
+
+  | Name           | Type       | Description                                                                                        |
+  |----------------|------------|----------------------------------------------------------------------------------------------------|
+  | `state`   | `bool` | Whether to enable cancelondisconnect |

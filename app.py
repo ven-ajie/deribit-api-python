@@ -12,13 +12,10 @@ import smtplib
 
 from api import RestClient
 
-#KEY = 'AVmfiQceujWF'
-#SECRET = '33WJ3QOFCBJMUB24OOYANJGWWSVG7RP5'
-#URL = 'https://test.deribit.com'
+KEY = 'AVmfiQceujWF'
+SECRET = '33WJ3QOFCBJMUB24OOYANJGWWSVG7RP5'
+URL = 'https://test.deribit.com'
 
-KEY = '4pVrP9e1ryxky'
-SECRET = 'XU6DW3L36C7XULEADI6HMKLSKYBU5JAI'
-URL = 'https://www.deribit.com'
 
 # Add command line switches
 parser = argparse.ArgumentParser(description='Bot')

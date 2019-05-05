@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import time, hashlib, requests, base64, sys
+import time, hashlib, requests, base64
+
 from collections import OrderedDict
 
 class RestClient(object):
@@ -25,7 +26,7 @@ class RestClient(object):
             response = self.session.post(self.url + action, data=data, headers={'x-deribit-sig': signature}, verify=True)
         else:
             response = self.session.get(self.url + action, params=data, verify=True)
-        
+
         if response.status_code != 200:
             raise Exception("Wrong response code: {0}".format(response.status_code))
 
@@ -33,7 +34,7 @@ class RestClient(object):
 
         if json["success"] == False:
             raise Exception("Failed: " + json["message"])
-        
+
         if "result" in json:
             return json["result"]
         elif "message" in json:
@@ -67,20 +68,23 @@ class RestClient(object):
 
         sha256 = hashlib.sha256()
         sha256.update(signature_string.encode("utf-8"))
-        sig = self.key + "." + str(tstamp) + "." 
+        sig = self.key + "." + str(tstamp) + "."
         sig += base64.b64encode(sha256.digest()).decode("utf-8")
         return sig
+
+    def getpositions(self):
+        return self.request("/api/v1/private/positions", {})
+
 
     def getorderbook(self, instrument):
         return self.request("/api/v1/public/getorderbook", {'instrument': instrument})
 
-    def getinstruments(self):
-        return self.request("/api/v1/public/getinstruments", {})
+    def gettime(self):
+        return self.request("/api/v1/public/time", {})
 
 
     def getcurrencies(self):
         return self.request("/api/v1/public/getcurrencies", {})
-
 
     def getlasttrades(self, instrument, count=None, since=None):
         options = {
@@ -103,13 +107,13 @@ class RestClient(object):
     def index(self):
         return self.request("/api/v1/public/index", {})
 
-    
+
     def stats(self):
         return self.request("/api/v1/public/stats", {})
 
 
     def account(self):
-        return self.request("/api/v1/private/account", {})
+        return self.request("/api/v1/private/account",  {"ext": 'true'})
 
 
     def buy(self, instrument, quantity, price, postOnly=None, label=None):
@@ -118,7 +122,7 @@ class RestClient(object):
             "quantity": quantity,
             "price": price
         }
-  
+
         if label:
             options["label"] = label
 
@@ -146,7 +150,7 @@ class RestClient(object):
     def cancel(self, orderId):
         options = {
             "orderId": orderId
-        }  
+        }
 
         return self.request("/api/v1/private/cancel", options)
 
@@ -169,7 +173,7 @@ class RestClient(object):
         options = {}
 
         if instrument:
-            options["instrument"] = instrument 
+            options["instrument"] = instrument
         if orderId:
             options["orderId"] = orderId
 
@@ -178,7 +182,6 @@ class RestClient(object):
 
     def positions(self):
         return self.request("/api/v1/private/positions", {})
-
 
     def orderhistory(self, count=None):
         options = {}
@@ -192,10 +195,10 @@ class RestClient(object):
         options = {
             "instrument": instrument
         }
-  
+
         if countNum:
             options["count"] = countNum
         if startTradeId:
             options["startTradeId"] = startTradeId
-        
+
         return self.request("/api/v1/private/tradehistory", options)
